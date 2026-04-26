@@ -269,7 +269,7 @@ The LIQLEV-predicted LLR for this configuration at the lowest vent rate ($1.36\,
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/0p003.png}
-\caption{LIQLEV-predicted liquid level rise versus time for the $91.4\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.610\,\text{m}$ ($2.0\,\text{ft}$) tank at 50\,\% fill and $1.36\,\text{g/s}$ ($0.003\,\text{lbm/s}$) vent rate (height-dependent $\epsilon$). The green star marks the global maximum.}
+\caption{LIQLEV-predicted liquid level rise versus time for the $91.4\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.610\,\text{m}$ ($2.0\,\text{ft}$) tank at 50\,\% fill and $1.36\,\text{g/s}$ ($0.003\,\text{lbm/s}$) vent rate (height-dependent $\epsilon$). The green star marks the global maximum. The simulation is integrated to $20\,\text{s}$ with the residual microgravity ($\sim 1.4 \times 10^{-3}\,$g) held constant past $5\,\text{s}$; the shaded region beyond $5\,\text{s}$ indicates this hypothetical extension and is shown only to demonstrate proximity of the predicted peak to its asymptotic value. Physical drop-tower tests terminate at the dotted line.}
 \label{fig:liqlev_time_history}
 \end{figure}
 
@@ -310,7 +310,7 @@ The candidate platforms were:
     \item \textbf{Parabolic Flight Campaigns:} $\sim 17\,\text{s}$ of reduced gravity ($\sim 10^{-2}$ to $10^{-3}\,$g with typical g-jitter), permitting longer-term thermodynamic stabilization and quasi-steady boiling.
 \end{itemize}
 
-Facility-specific gravity histories are incorporated through a custom \texttt{gravity\_function} callback. For the 5-second zero-gravity facility, accelerometer data from prior drop-tower tests (normalized time and axial acceleration) are converted to m/s$^2$ (ft/s$^2$ internally). A constant hold value is appended beyond the last measured point so that each simulation can be extended well beyond the nominal $5\,\text{s}$ duration (up to $20\,\text{s}$).
+Facility-specific gravity histories are incorporated through a custom \texttt{gravity\_function} callback. For the 5-second zero-gravity facility, accelerometer data from prior drop-tower tests (normalized time and axial acceleration) are converted to m/s$^2$ (ft/s$^2$ internally). A constant hold value of $\sim 1.4 \times 10^{-3}\,$g is appended beyond the last measured point, allowing each simulation to be integrated past the nominal $5\,\text{s}$ window out to $20\,\text{s}$. This post-cutoff segment is a deliberate \textit{hypothetical} extension---the actual drop tower terminates microgravity at $5\,\text{s}$---used solely to verify that the predicted peak liquid level rise within the real $5\,\text{s}$ window is close to the asymptotic maximum that would be reached given more time. In all time-history figures the shaded region beyond $5\,\text{s}$ marks this extrapolation.
 
 This extension was essential to determine whether the maximum LLR is attained \textit{within} the $5\,\text{s}$ microgravity window or only later. Comparing the time of peak rise against the rigid facility limit identifies optimal tank geometries, fill fractions, and vent rates that fully capture the complete transient---from initial meniscus reorientation through sustained boundary-layer-driven rise---before the end of the test window, while strictly avoiding lid impingement.
 
@@ -392,6 +392,27 @@ where $A_c = \pi D^2/4$. Consequently, the most aggressive LLR occurs at the low
 Variable-gravity parabolic profiles ($0.08\,$g or $0.01\,$g low-$g$ plateaus) were also evaluated and confirmed that the full transient can be captured during the low-$g$ portion, yielding rises of $13$--$50\,\text{mm}$ ($0.5$--$2\,\text{in}$) and beyond depending on vent rate and fill. In contrast, the 2.2- and 5-second drop-tower environments, while achieving the same ultra-low gravity quality, do not provide sufficient duration for the interface to reach its asymptotic maximum; higher vent rates are therefore required to generate a measurable rise within the rigid time window.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Plateaued vs.\ Sustained-Growth Regimes}
+\label{sec:plateaued_vs_sustained}
+
+The transient time histories (Figure~\ref{fig:0p3ft_time_histories}) reveal two qualitatively different regimes for the same tank geometry, fluid, and gravity profile, separated only by vent rate. Low-vent-rate configurations approach a clear asymptote within $2$--$3\,\text{s}$, while high-vent-rate configurations exhibit nearly monotonic interface rise that continues through the end of the $20\,\text{s}$ integration. The distinction is intrinsic to the LIQLEV physics under sustained low-gravity venting, not a numerical artifact, and merits explicit discussion because it informs which configurations are admissible test articles.
+
+The interface velocity in LIQLEV is the sum of two source terms:
+\[
+\frac{dh}{dt} = \frac{1}{A_c}\left(\frac{dV_{\rm BL}}{dt} + \frac{1}{\rho_l}\frac{dm_l}{dt}\right).
+\]
+Both $dV_{\rm BL}/dt$ (boundary-layer vapor generation) and $|dm_l/dt|/\rho_l$ (bulk flashing) are proportional to the instantaneous depressurization rate $|dP/dt|$ through the Clausius--Clapeyron relation. Vapor departure from the boundary layer is governed by the buoyancy term $a_1 \propto \sqrt{g(\rho_l - \rho_v)/\rho_l}$, which scales with the square root of the local gravity level: at $\sim 1.4 \times 10^{-3}\,$g (the held value past $5\,\text{s}$), $a_1$ is reduced by a factor of $\sim$27 relative to its $1\,$g value, severely throttling buoyant bubble departure.
+
+Two competing balances determine whether a configuration plateaus:
+
+\begin{itemize}
+    \item \textbf{Plateaued regime} (low vent rate): the absolute depressurization rate $|dP/dt|$ is small enough that ullage repressurization from boundary-layer evaporation is sufficient to bring the system into a quasi-steady state within the $5\,\text{s}$ window. Vapor generation balances venting, the bulk superheat decays, $V_{\rm BL}$ stabilizes, and $dh/dt \to 0$. For the recommended $91\,\text{mm}$ tank at $1.36$--$2.27\,\text{g/s}$ ($0.003$--$0.005\,\text{lbm/s}$), the value at $t = 5\,\text{s}$ is within $\sim$2\,\% of the asymptotic value (Figure~\ref{fig:liqlev_time_history}).
+
+    \item \textbf{Sustained-growth regime} (high vent rate): $|dP/dt|$ remains large throughout because the tank pressure has not yet decayed to the target final value (e.g., for the $2.72\,\text{g/s}$ ($0.006\,\text{lbm/s}$), 25\,\% fill case, $P = 45\,\text{kPa}$ at $t = 20\,\text{s}$, still above the $34\,\text{kPa}$ ($5\,\text{psia}$) target). The wall boundary-layer continues producing fresh vapor at a rate that exceeds buoyant departure; in addition, as the interface rises the wetted-wall area $\pi D h(t)$ grows, providing positive feedback that further accelerates $dV_{\rm BL}/dt$. The result is an interface velocity that does not relax to zero during the simulated window: $dh/dt$ is observed to \textit{increase} from $\sim 10^{-2}\,\text{ft/s}$ at $t = 10\,\text{s}$ to $\sim 8 \times 10^{-2}\,\text{ft/s}$ at $t = 20\,\text{s}$ for the same $2.72\,\text{g/s}$, 25\,\% fill case --- an order-of-magnitude acceleration over the second half of the integration. These solutions remain bounded only by the simulation's vent-profile-end termination at $20\,\text{s}$ or by tank fill-up.
+\end{itemize}
+
+In physical terms, sustained-growth solutions correspond to drop-tower configurations where the experiment captures only the early transient of an evolving boundary layer rather than a true thermodynamic peak. They are excluded from the recommended test matrix (Table~\ref{tab:recommended_test_matrix}) on the grounds that the $5\,\text{s}$ window cannot capture a representative maximum in such cases. This regime distinction also clarifies why the marker convention used in Figure~\ref{fig:0p3ft_time_histories} is the value at $t = 5\,\text{s}$ (the experimentally measurable peak) rather than the global maximum over the integrated interval: any peak that occurs in the shaded extrapolated region beyond $5\,\text{s}$ is unreachable under the actual facility duty cycle.
 
 
 \subsection{Tank Aspect Ratio Effects (5-Second Facility)}
@@ -613,7 +634,7 @@ These trends are illustrated in the transient response plots for the recommended
         \label{fig:75_level}
     \end{subfigure}
 
-    \caption{Transient response of the recommended $91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height tank in the 5-second facility using the height-dependent $\epsilon$ formulation. Left column: tank pressure. Right column: liquid level rise (in., native to source). Green stars: global maximum; red crosses: interface exceeded tank height.}
+    \caption{Transient response of the recommended $91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height tank in the 5-second facility using the height-dependent $\epsilon$ formulation. Left column: tank pressure. Right column: liquid level rise. Green stars: global maximum; red crosses: interface exceeded tank height. Simulations are integrated to $20\,\text{s}$ with the residual microgravity ($\sim 1.4 \times 10^{-3}\,$g) held constant past $5\,\text{s}$; the shaded region beyond $5\,\text{s}$ marks this hypothetical extension and is shown to demonstrate that recommended cases reach their asymptotic peak well within the facility window. Physical drop-tower tests terminate at the dotted line.}
     \label{fig:0p3ft_time_histories}
 \end{figure}
 
