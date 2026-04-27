@@ -7,6 +7,10 @@
 \usepackage{color}
 \usepackage{siunitx}
 \usepackage{subcaption}
+% microtype + emergencystretch: virtually eliminates overfull lines and
+% prevents text/plots from running past the page margins.
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -116,14 +120,14 @@ In contrast, at a lower vent rate of 0.5 ullage volume per second (again using R
 
 These observations demonstrated that both interfacial evaporation at the liquid-vapor free surface and bulk boiling within the liquid can occur during venting, with the transition between the two regimes governed primarily by the vent rate. Interfacial mass transfer was shown to play a significant role in determining the ullage pressure response, particularly at low vent rates. Analytical comparisons using a conduction-based model assuming a flat interface further highlighted the importance of accounting for mass transfer effects to accurately predict pressure decay.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/labus_1p0_ullage_per_s.png}
 \caption{Occurrence of bulk boiling in zero-gravity at high vent rate ($\sim 1.0$ ullage volume per second). Test fluid: Refrigerant C318; initial ullage pressure: $276\,\text{kPa}$. (a) Zero-gravity interface formation; (b) boiling near interface; (c) increasing vapor generation and interface rise; (d) final configuration prior to vent termination.}
 \label{fig:labus_1p0}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/labus_0p5_ullage_per_s.png}
 \caption{Typical test showing no bulk boiling at lower vent rate ($0.5$ ullage volume per second). Test fluid: Refrigerant C318; initial ullage pressure: $290\,\text{kPa}$. (a) Normal-gravity initial condition; (b) zero-gravity interface formation; (c) venting in progress; (d) final configuration prior to vent termination.}
@@ -134,21 +138,21 @@ These observations demonstrated that both interfacial evaporation at the liquid-
 \subsection{The Saturn S-IVB AS-203 Flight Experiment}
 The most comprehensive in-orbit data on cryogenic liquid behavior during venting were obtained during the Saturn S-IVB AS-203 mission launched on 5 July 1966 \cite{AS203_1970}. The experiment featured three distinct rapid depressurization sequences of the liquid hydrogen tank, executed with both the Continuous Vent System (CVS) and the Non-Propulsive Vent (NPV) system. These controlled pressure reductions of several psi occurred while the vehicle remained in a low-gravity coast environment ($\sim10^{-4}$ to $10^{-5}$\,g).
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/saturn_temp_sensors_location.png}
 \caption{Locations of temperature sensors and liquid-vapor detectors in the S-IVB liquid hydrogen tank during the AS-203 experiment \cite{AS203_1970}.}
 \label{fig:as203_sensors}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/saturn_temp_sensor_wetting.png}
 \caption{Response of liquid-vapor sensor N052 during the third depressurization, confirming upward motion of the liquid-vapor interface \cite{AS203_1970}.}
 \label{fig:as203_n052}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/saturn_liqlev_vs_pressure.png}
 \caption{Measured relative liquid level rise versus pressure reduction during AS-203 venting events \cite{AS203_1970}.}
@@ -164,7 +168,7 @@ These unique low-gravity venting observations established that vapor generation 
 \subsection{Development of the Original LIQLEV Model}
 Following the AS-203 flight, the LIQLEV (Liquid Level) boundary-layer model was developed in Fortran to predict the contribution of wall boundary-layer boil-off to bulk liquid displacement. The model, fully documented in Appendix B of NASA CR-109847, focused on vapor generation within a thin thermal boundary layer along the wetted tank sidewall and its effect on the upward motion of the liquid-vapor interface.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/saturn_boundary_layer_model.png}
 \caption{Bubble boundary-layer model developed for the AS-203 liquid hydrogen tank \cite{AS203_1970}. The model treats vapor generation within a thin thermal boundary layer along the wetted sidewall, with bubbles contributing to bulk liquid displacement.}
@@ -177,7 +181,7 @@ As illustrated in Figure~\ref{fig:liqlev_boundary_layer}, the model treats the s
 \]
 where $A_c$ is the tank cross-sectional area. Parametric studies examined the sensitivity of liquid level rise to vent rate, tank diameter, gravity level, and bubble spacing.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/saturn_mass_balance.png}
 \caption{Mass balance for a differential element of the unsteady thermal boundary layer in the original LIQLEV model \cite{AS203_1970}}
@@ -224,7 +228,7 @@ Model fidelity was established through two complementary tracks: a quantitative 
 
 Validation was performed against the JAXA $30\,\text{m}^3$ LH$_2$ large-scale venting experiment reported by Tani et al.~\cite{tani2021pressure}. The dedicated module \texttt{tani\_validation.py} reproduces the experimental piecewise-cubic vent mass-flow profile (rapid stepped blowdown over $0$--$15$\,s followed by long-term decay), shown in Figure~\ref{fig:jaxa_vent_profile}.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/tani_validation/vent_rate.png}
 \caption{Input vent-rate profile (kg/s) used for JAXA validation. The piecewise-cubic fit reproduces the rapid stepped blowdown (0--15\,s) and subsequent long-term decay observed experimentally.}
@@ -237,7 +241,7 @@ To reproduce the experimentally observed dynamics, a high effective $\epsilon$ w
 
 The resulting pressure-decay predictions are shown in Figure~\ref{fig:jaxa_pressure}. The bulk\_fake modes (especially $\epsilon = 75$ and $\epsilon = 100$) closely match the experimental data, capturing both the initial pressure recovery caused by delayed bulk boiling and the subsequent near-equilibrium depressurization. The height-dependent mode under-predicts the early vapor generation rate; its curve is largely obscured behind the $\epsilon = 1.0$ line and is therefore not visible on the plot.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/tani_validation/pressure_decay_full.png}
 \caption{Simulated ullage pressure decay versus experimental data for the JAXA $30\,\text{m}^3$ LH$_2$ test. Bulk\_fake modes ($\epsilon = 50$, $75$, $100$) agree closely with the data; the height-dependent mode under-predicts early vapor generation (curve hidden behind the $\epsilon = 1.0$ line).}
@@ -246,7 +250,7 @@ The resulting pressure-decay predictions are shown in Figure~\ref{fig:jaxa_press
 
 The LLR predictions (Figure~\ref{fig:jaxa_level}) further confirm the necessity of the bulk\_fake adjustment. The height-dependent mode produces only a modest rise, whereas the bulk\_fake modes approach the experimentally observed displacement, detected when the TIE-04 temperature probe (located $6.422\,\text{m}$ from the tank bottom) became wetted. With an initial liquid height of $6.248\,\text{m}$, this corresponds to an interface displacement of $0.174\,\text{m}$ ($\approx 174\,\text{mm}$ or $6.85\,\text{in}$) within the first few seconds. Of the cases simulated, $\epsilon = 100$ provides the closest match---reaching $\sim 174\,\text{mm}$ at $t \approx 2.5\,\text{s}$ before plateauing around $185\,\text{mm}$. The $\epsilon = 75$ case plateaus near $150\,\text{mm}$, and $\epsilon = 50$ near $110\,\text{mm}$, both below the observed rise. The bulk-flashing-dominated regime in the JAXA tank is therefore best represented by an effective $\epsilon$ at the upper end of the explored range.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/tani_validation/liqlev_full.png}
 \caption{Liquid level rise versus time for different $\epsilon$ modes in the JAXA validation case. Only the bulk\_fake modes reproduce the experimentally observed $\approx 174\,\text{mm}$ ($6.85\,\text{in}$) rise.}
@@ -266,14 +270,14 @@ The representative simulation utilized a $91.4\,\text{mm}$ ($0.3\,\text{ft}$) di
 
 The LIQLEV-predicted LLR for this configuration at the lowest vent rate ($1.36\,\text{g/s}$ or $0.003\,\text{lbm/s}$) is shown in Figure~\ref{fig:liqlev_time_history}; the model predicts a smooth rise that reaches its maximum of approximately $81\,\text{mm}$ ($3.2\,\text{in}$) well within the 5-second low-gravity window.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/0p003.png}
 \caption{LIQLEV-predicted liquid level rise versus time for the $91.4\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.610\,\text{m}$ ($2.0\,\text{ft}$) tank at 50\,\% fill and $1.36\,\text{g/s}$ ($0.003\,\text{lbm/s}$) vent rate (height-dependent $\epsilon$). The green star marks the global maximum. The simulation is integrated to $20\,\text{s}$ with the residual microgravity ($\sim 1.4 \times 10^{-3}\,$g) held constant past $5\,\text{s}$; the shaded region beyond $5\,\text{s}$ indicates this hypothetical extension and is shown only to demonstrate proximity of the predicted peak to its asymptotic value. Physical drop-tower tests terminate at the dotted line.}
 \label{fig:liqlev_time_history}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{images/CFD_vapor_inlet_combined.png}
 \caption{CFD visualization of vapor volume fraction (blue = liquid, red = vapor) in the $91.4\,\text{mm}$ ($0.3\,\text{ft}$) $\times$ $0.610\,\text{m}$ ($2.0\,\text{ft}$) tank at 50\,\% fill, axial slice through the cylinder centerline ($z = 0$). The white line is the VOF $= 0.5$ isoline defining the liquid--vapor interface. \textbf{Left:} early vapor injection at $t = 0.01\,\text{s}$, interface still flat at the initial $y_0 = 305\,\text{mm}$ (50\,\% fill). \textbf{Right:} at $t = 5.00\,\text{s}$ the buoyant vapor plume from the bottom inlet has risen to $\sim 200\,\text{mm}$, the bulk liquid is bracketed between the plume and the upper meniscus, and pronounced wall liquid climb is visible (the bulk vapor curls down at the cylinder walls). Three rise reference lines are drawn on the right panel: \textit{blue dashed} marks the CFD centerline upper-meniscus position $\Delta h_{\rm cl} = 51\,\text{mm}$ (the lowest-point displacement an axial probe would measure); \textit{green dashed} marks the radial-mean / volume-equivalent flat-interface rise $\Delta h_{\rm eq} = 60\,\text{mm}$; \textit{red dotted} marks the LIQLEV-predicted bulk rise $\Delta h = 81\,\text{mm}$. The black dashed line on both panels marks the initial interface at $y_0 = 305\,\text{mm}$.}
@@ -353,7 +357,7 @@ Extensive parametric simulations were performed with the modernized LIQLEV model
 % \]
 % where $A_c = \pi D^2/4$ is the tank cross-sectional area. Consequently, the most aggressive LLR occurs at the lowest gravity levels (Figure~\ref{fig:key_findings}).
 
-% % \begin{figure}[htbp]
+% % \begin{figure}[!htbp]
 % % \centering
 % % \includegraphics[width=0.95\textwidth]{figures/key_findings_8-28-25.pdf}
 % % \caption{Summary of facility performance and liquid level rise behavior across gravity levels and test durations (Cryo Vent Study Phase Summary, 8/28/25).}
@@ -362,7 +366,7 @@ Extensive parametric simulations were performed with the modernized LIQLEV model
 
 % Variable-gravity parabolic-flight profiles (low-g plateaus of 0.08\,g or 0.01\,g) were also evaluated and confirmed that the full transient can be captured during the low-g portion, yielding rises of 0.5--2+ inches depending on vent rate and fill level (Figure~\ref{fig:variable_gravity}). In contrast, the 2.2 s and 5.5 s drop-tower environments, although achieving the same ultra-low gravity quality, do not provide sufficient duration for the interface to reach its asymptotic maximum; higher vent rates are therefore required to generate a measurable rise within the rigid time window.
 
-% % \begin{figure}[htbp]
+% % \begin{figure}[!htbp]
 % % \centering
 % % \includegraphics[width=0.95\textwidth]{figures/variable_gravity_parabolic.pdf}
 % % \caption{Gravity profiles and corresponding liquid level rise for parabolic-flight variable-gravity cases (0.08 g and 0.01 g low-g plateaus).}
@@ -428,7 +432,7 @@ The optimal test conditions were therefore identified near $50\,\%$ fill and dia
 
 These trends are illustrated in the tank-size sweep contour plots at $25\,\%$, $50\,\%$, and $75\,\%$ initial fill fraction for the four vent rates examined (Figures~\ref{fig:sweep_25_combined}, \ref{fig:sweep_50_combined}, \ref{fig:sweep_75_combined}). Each figure shows rise (in inches, native to the original sweep) at $t = 5\,\text{s}$, $t = 20\,\text{s}$ or end-of-run, and global peak. The red contour marks the $50.8\,\text{mm}$ ($2\,\text{in}$) measurable threshold; hatched regions denote geometries that reach the tank lid within the $5\,\text{s}$ window.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 
 \begin{subfigure}[b]{0.85\textwidth}
@@ -461,7 +465,7 @@ These trends are illustrated in the tank-size sweep contour plots at $25\,\%$, $
 \label{fig:sweep_25_combined}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 
 \begin{subfigure}[b]{0.85\textwidth}
@@ -493,7 +497,7 @@ These trends are illustrated in the tank-size sweep contour plots at $25\,\%$, $
 \label{fig:sweep_50_combined}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 
 \begin{subfigure}[b]{0.85\textwidth}
@@ -543,11 +547,11 @@ The facility operates at $\sim 10^{-5}\,$g. Comprehensive parametric sweeps enco
 
 Recommended configurations use a small-diameter cylindrical tank ($91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height, $L/D \approx 6.67$) with initial fill fractions of $40$--$65\,\%$ and moderate constant vent rates ($1.36$--$2.72\,\text{g/s}$, or $0.003$--$0.006\,\text{lbm/s}$, for nitrogen). Under these conditions, the peak rise is typically attained between $3.5$ and $4.8\,\text{s}$, well within the available window and without lid impingement, delivering clean optical data on sustained thermodynamic venting suitable for CFD correlation development. A summary recommended test matrix is given in Table~\ref{tab:recommended_test_matrix}.
 
-\begin{table}[htbp]
+\begin{table}[!htbp]
 \centering
 \caption{Recommended pre-test matrix for the NASA GRC 5-second zero-gravity facility (working fluid: nitrogen; height-dependent $\epsilon$). Predicted peak rise and time-to-peak from the modernized LIQLEV solver.}
 \label{tab:recommended_test_matrix}
-\small
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}l c c c c c c c@{}}
 \toprule
 Tank ($D \times H$) & $L/D$ & Fill & Vent rate & Pred.\ peak rise & Time to peak & Margin to lid & Notes \\
@@ -559,12 +563,12 @@ $91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 50 & 2.27 [0.005] & $\sim$110 [4.
 $91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 65 & 2.27 [0.005] & $\sim$140 [5.5] & $\sim$3.6 & $\sim$70 & high signal \\
 $91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 65 & 2.72 [0.006] & $\sim$170 [6.7] & $\sim$3.5 & $\sim$45 & high signal \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 These trends are illustrated in the transient response plots for the recommended $91\,\text{mm} \times 0.61\,\text{m}$ tank at $25\,\%$, $50\,\%$, and $75\,\%$ initial fill fractions (Figures~\ref{fig:0p3ft_time_histories}--\ref{fig:0p3ft_time_histories_75}). Each figure shows ullage pressure decay (top) and LLR (bottom) for the four vent rates examined. Green stars mark the value at $t = 5\,\text{s}$ (the experimentally measurable peak); red crosses indicate cases where the interface reached the tank lid within the $5\,\text{s}$ window. The plots confirm that $40$--$65\,\%$ fill with the selected vent rates produces measurable rises of $50$--$200\,\text{mm}$ ($2$--$8\,\text{in}$) within the facility window, while $75\,\%$ fill leads to early impingement at the higher vent rates --- reinforcing the recommended upper fill limit.
 
-% \begin{figure}[htbp]
+% \begin{figure}[!htbp]
 % \centering
 % \includegraphics[width=\textwidth]{images/0p3ft_x_2ft_level_rise.png}
 % \caption{Transient response of the recommended 0.3\,ft diameter $\times$ 2.0\,ft height tank in the 5-second facility using the height-dependent $\epsilon$ formulation. Left column: tank pressure versus time. Right column: liquid level rise (inches) versus time. Green stars denote the global maximum rise; red crosses indicate cases where the interface exceeded the tank height.}
@@ -664,7 +668,7 @@ The results (Figures~\ref{fig:cfd_meniscus_0p2ft} and \ref{fig:cfd_meniscus_6cm}
 
 The CFD-derived meniscus formation times provide important quantitative insight into the pre-venting interface dynamics. For the recommended $61$--$91\,\text{mm}$ diameter $\times$ $0.61\,\text{m}$ height tanks, the simulations indicate that complete reorientation may require more time than is available before venting begins in the GRC 5-second facility. Whether full pre-venting meniscus stabilization is required to meet the scientific objectives remains an open question to be resolved by the forthcoming physical experiments. Nevertheless, the results confirm that the selected tank scale remains well suited to capture the targeted boundary-layer-driven LLR once venting commences.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \begin{subfigure}[b]{0.6\textwidth}
 \centering
@@ -689,7 +693,7 @@ The CFD-derived meniscus formation times provide important quantitative insight 
 \label{fig:cfd_meniscus_0p2ft}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
 \begin{subfigure}[b]{0.6\textwidth}
 \centering
@@ -720,11 +724,11 @@ The CFD-derived meniscus formation times provide important quantitative insight 
 
 The modeling, validation, and pre-test design activities described above complete the analytical phase of the FY25 Drop Tower LLR Study and establish a defensible baseline for the experimental program that follows. The current status, expressed as a milestone progression, is summarized in Table~\ref{tab:milestones}.
 
-\begin{table}[htbp]
+\begin{table}[!htbp]
 \centering
 \caption{Project milestone status. Symbols: $\checkmark$ complete; $\circlearrowright$ in progress; $\bigcirc$ planned (FY26 and beyond).}
 \label{tab:milestones}
-\small
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}c l l@{}}
 \toprule
 Status & Milestone & Output / artifact \\
@@ -742,7 +746,7 @@ $\bigcirc$   & Drop-tower hardware integration and functional checkout    & Caps
 $\bigcirc$   & FY26+ drop-tower test campaign                             & Transient LLR data set \\
 $\bigcirc$   & Bulk-boiling source term + correlation development         & Updated LIQLEV release \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 The modeling work is currently assessed at Technology Readiness Level (TRL) 4: component validation in a laboratory-equivalent environment, demonstrated by quantitative agreement with the JAXA large-scale data and consistent volume-equivalent agreement with three-dimensional CFD. Advancement to TRL 5 requires the planned drop-tower campaign to provide the first sub-meter-scale, flight-relevant LLR data set; this in turn enables the bulk-boiling source-term refinement needed to retire the present \texttt{bulk\_fake} engineering approximation.
