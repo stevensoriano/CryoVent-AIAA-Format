@@ -568,23 +568,33 @@ In comparison, the GRC 5-second zero-gravity facility provides both a longer tes
 \textbf{GRC 5-Second Zero-Gravity Facility:}
 The facility operates at $\sim 10^{-5}\,$g. Comprehensive parametric sweeps encompassing thousands of geometries (diameters $61$--$305\,\text{mm}$, heights $91$--$762\,\text{mm}$), initial fill fractions, vent rates, and $\epsilon$ schedules identified this platform as the optimal test venue. It provides the ideal balance of true high-quality microgravity and sufficient test duration for the wall boundary-layer vapor generation and resulting liquid displacement to develop fully, enabling the interface to attain its maximum thermodynamic rise---unlike the severely time-constrained 2.2-second facility. The low residual gravity further enhances measurable displacement by minimizing buoyant bubble departure and increasing vapor residence time within the bulk liquid column, producing substantially larger rises than achievable under the higher-$g$ environment typical of parabolic flight.
 
-Recommended configurations use a small-diameter cylindrical tank ($91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height, $L/D \approx 6.67$) with initial fill fractions of $40$--$65\,\%$ and moderate constant vent rates ($1.36$--$2.72\,\text{g/s}$, or $0.003$--$0.006\,\text{lbm/s}$, for nitrogen). Under these conditions, the peak rise is typically attained between $3.5$ and $4.8\,\text{s}$, well within the available window and without lid impingement, delivering clean optical data on sustained thermodynamic venting suitable for CFD correlation development. A summary recommended test matrix is given in Table~\ref{tab:recommended_test_matrix}.
+Recommended configurations use a small-diameter cylindrical tank ($91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height, $L/D \approx 6.67$) with initial fill fractions of $50$--$75\,\%$ and constant vent rates in the $1.36$--$2.72\,\text{g/s}$ ($0.003$--$0.006\,\text{lbm/s}$) range. Under these conditions, the LIQLEV solver predicts peak rises between $\sim 60$ and $\sim 170\,\text{mm}$ ($\sim 2.4$ and $\sim 6.7\,\text{in}$) attained between $3.5$ and $4.8\,\text{s}$, well within the available $5\,\text{s}$ window and without lid impingement.
+
+The proposed experimental test matrix is summarized in Table~\ref{tab:recommended_test_matrix}. Twelve unique conditions span two fill levels ($50\,\%$ and $75\,\%$) and three vent-rate categories (Low / Med / High) at both $1\,$g (ground baselines) and $10^{-5}\,$g (drop-tower microgravity), all with liquid nitrogen (LN$_2$) and gaseous nitrogen (GN$_2$). Each test will be performed twice for repeatability assessment, yielding approximately 15 drops total once shake-down repeats are excluded.
+
+Vent rates in the test matrix are intentionally specified as qualitative \emph{Low / Med / High} categories rather than the LIQLEV-predicted numerical values ($1.36$, $2.04$, $2.72\,\text{g/s}$ as candidate centerlines for the three bins). Whether the test apparatus can reliably deliver these specific flow rates---and hold them stable across the $5\,\text{s}$ drop window---is itself a hardware-validation question that must be answered by the $1\,$g shake-down tests (Tests~1--6) before the microgravity drops (Tests~7--12). Tests~1--6 therefore serve a dual purpose: they calibrate the Low / Med / High categories to numerical mass-flow rates for the actual hardware, and they provide $1\,$g reference data for direct comparison against the matched-condition microgravity drops. Final mapping of Low / Med / High to specific mass-flow rates will be reported alongside the experimental data.
 
 \begin{table}[!htbp]
 \centering
-\caption{Recommended pre-test matrix for the NASA GRC 5-second zero-gravity facility (working fluid: nitrogen; height-dependent $\epsilon$). Predicted peak rise and time-to-peak from the modernized LIQLEV solver.}
+\caption{Sample test matrix for the NASA GRC 5-second zero-gravity facility. Test article: $91\,\text{mm}$ ($0.3\,\text{ft}$) diameter $\times$ $0.61\,\text{m}$ ($2.0\,\text{ft}$) height tank, working fluids LN$_2$/GN$_2$. Vent-rate categories (Low / Med / High) are calibrated to numerical mass-flow rates by the $1\,$g shake-down drops (Tests~1--6); LIQLEV-predicted target rates for these categories are $\sim 1.36$, $\sim 2.04$, and $\sim 2.72\,\text{g/s}$ ($\sim 0.003$, $\sim 0.0045$, $\sim 0.006\,\text{lbm/s}$). All tests performed $2\times$ for repeatability assessment ($\sim 15$ drops total).}
 \label{tab:recommended_test_matrix}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}l c c c c c c c@{}}
+\resizebox{0.7\textwidth}{!}{%
+\begin{tabular}{@{}c c c c@{}}
 \toprule
-Tank ($D \times H$) & $L/D$ & Fill & Vent rate & Pred.\ peak rise & Time to peak & Margin to lid & Notes \\
- & & (\%) & (g/s [lbm/s]) & (mm [in]) & (s) & at peak (mm) & \\
+Test \# & Gravity Level & Fill Level (\%) & Vent \\
 \midrule
-$91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 40 & 1.36 [0.003] & $\sim$60 [2.4] & $\sim$4.6 & $\sim$305 & baseline low \\
-$91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 50 & 1.81 [0.004] & $\sim$80 [3.2] & $\sim$4.0 & $\sim$225 & primary \\
-$91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 50 & 2.27 [0.005] & $\sim$110 [4.3] & $\sim$3.7 & $\sim$195 & primary \\
-$91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 65 & 2.27 [0.005] & $\sim$140 [5.5] & $\sim$3.6 & $\sim$70 & high signal \\
-$91\,\text{mm} \times 0.61\,\text{m}$ & 6.67 & 65 & 2.72 [0.006] & $\sim$170 [6.7] & $\sim$3.5 & $\sim$45 & high signal \\
+1  & $1\,$g          & 50 & Low  \\
+2  & $1\,$g          & 50 & Med  \\
+3  & $1\,$g          & 50 & High \\
+4  & $1\,$g          & 75 & Low  \\
+5  & $1\,$g          & 75 & Med  \\
+6  & $1\,$g          & 75 & High \\
+7  & $10^{-5}\,$g    & 50 & Low  \\
+8  & $10^{-5}\,$g    & 50 & Med  \\
+9  & $10^{-5}\,$g    & 50 & High \\
+10 & $10^{-5}\,$g    & 75 & Low  \\
+11 & $10^{-5}\,$g    & 75 & Med  \\
+12 & $10^{-5}\,$g    & 75 & High \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -767,6 +777,7 @@ $\checkmark$ & Test matrix down-select for GRC 5-second facility          & Tabl
 $\circlearrowright$ & Test article fabrication and instrumentation plan   & Tank, vent assembly, sensor map \\
 $\bigcirc$   & Drop-tower hardware integration and functional checkout    & Capsule integration \\
 $\bigcirc$   & FY26+ drop-tower test campaign                             & Transient LLR data set \\
+$\bigcirc$   & CFD vent boiling model development \& validation           & Phase-resolved VOF reference case \\
 $\bigcirc$   & Bulk-boiling source term + correlation development         & Updated LIQLEV release \\
 \bottomrule
 \end{tabular}}
@@ -779,7 +790,7 @@ The forthcoming experiments are designed around the Table~\ref{tab:recommended_t
 \section{Conclusions}
 \label{sec:conclusions}
 
-\paragraph{Findings.} The legacy LIQLEV boundary-layer model has been reimplemented as a parallelized, CoolProp-integrated Python framework with a Numba JIT-compiled solver that delivers $\sim$40$\times$ speedup over the original pure-Python loop while reproducing the reference solution to better than 1 part in $10^6$. The modernized model has been validated against the JAXA $30\,\text{m}^3$ LH$_2$ depressurization experiment, where a constant $\epsilon$ in the range $75$--$100$ (\texttt{bulk\_fake} mode) reproduces the experimentally observed $174\,\text{mm}$ ($6.85\,\text{in}$) interface rise within the first few seconds, with $\epsilon \approx 100$ providing the closest match. Three-dimensional VOF CFD cross-validation confirms that LIQLEV provides a conservatively high estimate of bulk liquid displacement that matches the volume-equivalent flat-interface height to within centimeters at the $91\,\text{mm} \times 0.61\,\text{m}$ scale. Parametric sweeps across more than 2000 cylindrical geometries identify the GRC 5-second zero-gravity facility as the optimal test venue, with a recommended test article of $91\,\text{mm}$ diameter $\times$ $0.61\,\text{m}$ height ($L/D \approx 6.67$), nitrogen working fluid, $40$--$65\,\%$ initial fill, and constant vent rates of $1.36$--$2.72\,\text{g/s}$ ($0.003$--$0.006\,\text{lbm/s}$); under these conditions the peak rise is attained at $3.5$--$4.8\,\text{s}$, comfortably within the facility's microgravity window.
+\paragraph{Findings.} The legacy LIQLEV boundary-layer model has been reimplemented as a parallelized, CoolProp-integrated Python framework with a Numba JIT-compiled solver that delivers $\sim$40$\times$ speedup over the original pure-Python loop while reproducing the reference solution to better than 1 part in $10^6$. The modernized model has been validated against the JAXA $30\,\text{m}^3$ LH$_2$ depressurization experiment, where a constant $\epsilon$ in the range $75$--$100$ (\texttt{bulk\_fake} mode) reproduces the experimentally observed $174\,\text{mm}$ ($6.85\,\text{in}$) interface rise within the first few seconds, with $\epsilon \approx 100$ providing the closest match. Three-dimensional VOF CFD cross-validation confirms that LIQLEV provides a conservatively high estimate of bulk liquid displacement that matches the volume-equivalent flat-interface height to within centimeters at the $91\,\text{mm} \times 0.61\,\text{m}$ scale. Parametric sweeps across more than 2000 cylindrical geometries identify the GRC 5-second zero-gravity facility as the optimal test venue, with a recommended test article of $91\,\text{mm}$ diameter $\times$ $0.61\,\text{m}$ height ($L/D \approx 6.67$), nitrogen working fluid, and a 12-condition test matrix spanning $50\,\%$ and $75\,\%$ initial fill at three vent-rate categories (Low / Med / High, calibrated to LIQLEV-predicted target rates of $1.36$--$2.72\,\text{g/s}$ in the $1\,$g shake-down phase). Under these conditions the LIQLEV-predicted peak rise is attained at $3.5$--$4.8\,\text{s}$, comfortably within the facility's microgravity window.
 
 \paragraph{Forward Plan.} The FY26+ drop-tower campaign will execute the matrix in Table~\ref{tab:recommended_test_matrix} using high-speed imaging, sidewall temperature probes, and calibrated ullage pressure transducers. The data will close the validation loop on the modernized model, drive the development of an explicit bulk-liquid boiling source term to retire the \texttt{bulk\_fake} engineering approximation, and establish the first sub-meter-scale, flight-relevant transient LLR data set for cryogenic fluid management correlation development. The 2.2-second drop tower is reserved for early-transient depressurization studies; parabolic flight is not pursued due to lateral g-jitter contamination of the boundary-layer-driven signal.
 
