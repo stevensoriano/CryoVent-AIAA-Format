@@ -248,20 +248,13 @@ The resulting pressure-decay predictions are shown in Figure~\ref{fig:jaxa_press
 \label{fig:jaxa_pressure}
 \end{figure}
 
-The LLR predictions (Figures~\ref{fig:jaxa_level}--\ref{fig:jaxa_level_15s}) further confirm the necessity of the bulk\_fake adjustment. The height-dependent mode produces only a modest rise, whereas the bulk\_fake modes approach the experimentally observed displacement, detected when the TIE-04 temperature probe (located $6.422\,\text{m}$ from the tank bottom) became wetted. With an initial liquid height of $6.248\,\text{m}$, this corresponds to an interface displacement of $0.174\,\text{m}$ ($\approx 174\,\text{mm}$ or $6.85\,\text{in}$) within the first few seconds. The early-time response is shown in Figure~\ref{fig:jaxa_level_15s}: $\epsilon = 100$ provides the closest match, reaching $\sim 174\,\text{mm}$ at $t \approx 2.5\,\text{s}$ before plateauing near $\sim 188\,\text{mm}$ within the first $15\,\text{s}$. The $\epsilon = 75$ case plateaus near $\sim 152\,\text{mm}$, and $\epsilon = 50$ near $\sim 115\,\text{mm}$, both below the observed rise. Beyond the early plateau the simulated rise continues to evolve as the imposed vent profile approaches its peak (Figure~\ref{fig:jaxa_level}); the comparison against the TIE-04 wetting event, however, is governed by the early-time match captured in Figure~\ref{fig:jaxa_level_15s}. The bulk-flashing-dominated regime in the JAXA tank is therefore best represented by an effective $\epsilon$ at the upper end of the explored range.
+The LLR predictions (Figure~\ref{fig:jaxa_level}) further confirm the necessity of the bulk\_fake adjustment. The height-dependent mode produces only a modest rise, whereas the bulk\_fake modes approach the experimentally observed displacement, detected when the TIE-04 temperature probe (located $6.422\,\text{m}$ from the tank bottom) became wetted. With an initial liquid height of $6.248\,\text{m}$, this corresponds to an interface displacement of $0.174\,\text{m}$ ($\approx 174\,\text{mm}$ or $6.85\,\text{in}$) within the first few seconds, marked by the gold star in Figure~\ref{fig:jaxa_level}. Of the cases simulated, $\epsilon = 100$ provides the closest match: it reaches $\sim 174\,\text{mm}$ at $t \approx 2.5\,\text{s}$ and plateaus near $\sim 185\,\text{mm}$ within the first $15\,\text{s}$. The $\epsilon = 75$ case plateaus near $\sim 152\,\text{mm}$, and $\epsilon = 50$ near $\sim 115\,\text{mm}$, both below the observed rise. The bulk-flashing-dominated regime in the JAXA tank is therefore best represented by an effective $\epsilon$ at the upper end of the explored range.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{images/tani_validation/liqlev_full.png}
-\caption{Liquid level rise versus time for different $\epsilon$ modes in the JAXA validation case (full $3600\,\text{s}$ window). Only the bulk\_fake modes produce a rise of the order of the experimentally observed $\approx 174\,\text{mm}$ ($6.85\,\text{in}$); the height-dependent and $\epsilon=1.0$ modes are essentially flat at this scale.}
+\includegraphics[width=0.95\textwidth]{images/tani_validation/liqlev_15s_si.png}
+\caption{Early-time ($0$--$15\,\text{s}$) JAXA LLR predictions for each $\epsilon$ mode. The gold star marks the experimental TIE-04 wetting event ($\sim 174\,\text{mm}$ at $t \approx 4\,\text{s}$). The bulk\_fake $\epsilon = 100$ case reaches the experimentally observed rise within $\sim 0.5\,\text{s}$ of the wetting event and plateaus near $\sim 185\,\text{mm}$, providing the closest match. The height-dependent and $\epsilon = 1.0$ curves remain near zero at this scale.}
 \label{fig:jaxa_level}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.95\textwidth]{images/tani_validation/liqlev_15.png}
-\caption{Early-time ($0$--$15\,\text{s}$) zoom of the JAXA LLR predictions. The bulk\_fake $\epsilon = 100$ case reaches the experimentally observed $\sim 174\,\text{mm}$ rise at $t \approx 2.5\,\text{s}$ and plateaus near $\sim 188\,\text{mm}$, providing the closest match to the TIE-04 wetting observation.}
-\label{fig:jaxa_level_15s}
 \end{figure}
 
 These results confirm that migrating to CoolProp for high-accuracy real-fluid properties, combined with dynamic time-stepping and flexible $\epsilon$ modeling, eliminates the numerical artifacts of the legacy VBA implementation. The bulk\_fake mode (high constant $\epsilon$) provides a practical engineering approximation for large tanks in which bulk boiling dominates. Future development will add an explicit bulk-liquid boiling source term to the original wall boundary-layer formulation, retaining the physically grounded foundation while introducing a first-principles bulk contribution.
