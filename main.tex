@@ -50,13 +50,13 @@
 \maketitle
 
 \begin{abstract}
-Managing cryogenic propellants in microgravity poses significant challenges, particularly safe venting without liquid entrainment. During tank depressurization, bulk boiling and wall boundary-layer phenomena drive a transient rise of the liquid--vapor interface that can carry liquid into the vent line, causing propellant loss and vent-system damage.
+Managing cryogenic propellants in microgravity poses significant challenges, particularly safe venting without liquid entrainment. During tank depressurization, bulk boiling and wall boundary-layer phenomena drive a transient rise of the liquid--vapor interface that can carry liquid into the vent line, causing propellant loss, freezing in the vent line, and spacecraft control challenges.
 
 This study modernizes the legacy LIQLEV boundary-layer model, originally developed following the Saturn AS-203 flight experiment. The original Fortran and Visual Basic for Applications (VBA) implementation has been rewritten as a parallelized Python framework integrated with CoolProp to provide high-accuracy real-fluid thermodynamic properties for multiple cryogens.
 
 Parametric sweeps were performed across initial fill levels, vent flow rates, tank aspect ratios, and microgravity regimes from $10^{-3}$ to $10^{-5}\,$g to evaluate three candidate test platforms: the NASA Glenn Research Center (GRC) 2.2-second drop tower, the NASA GRC 5-second zero-gravity facility, and parabolic flight campaigns. The 5-second zero-gravity facility offers the best balance of microgravity quality and test duration to capture the maximum measurable liquid level rise (LLR). Optimal initial fill fractions are identified to prevent lid impingement.
 
-Predictive correlations for pressure-driven liquid level rise in microgravity remain anchored to a single 1966 in-orbit data set, leaving a critical gap for the next generation of cryogenic propellant systems. The computational framework and recommended test matrix presented here lay the foundation for a sub-meter-scale drop-tower experiment that will deliver the high-quality, flight-relevant liquid--vapor interface data the community currently lacks, providing the empirical basis needed to advance correlations for cryogenic fluid management.
+Predictive correlations for pressure-driven liquid level rise in microgravity remain anchored to a single 1966 in-orbit data set, leaving a critical gap for the next generation of cryogenic propellant systems. The computational framework and recommended test matrix presented here lay the foundation for a small-scale drop-tower experiment that will deliver the high-quality, flight-relevant liquid--vapor interface data the community currently lacks, providing the empirical basis needed to advance correlations for cryogenic fluid management.
 \end{abstract}
 
 \noindent \textbf{Keywords:} Cryogenic Fluid Management, Microgravity, Zero-Gravity Venting, Liquid Level Rise, Computational Fluid Dynamics, LIQLEV, Drop Tower Testing.
@@ -66,25 +66,30 @@ Predictive correlations for pressure-driven liquid level rise in microgravity re
 $A_c$ & tank cross-sectional area, m$^2$ \\
 $A_{\rm wall}$ & wetted sidewall area, m$^2$ \\
 $D$ & tank diameter, m \\
-$h(t)$, $h_2$ & instantaneous liquid height (interface location), m \\
+$h(t)$ & instantaneous liquid height (interface location), m \\
 $h_0$ & initial liquid height, m \\
-$h_{\rm tank}$, $Z_{\rm tank}$ & tank inner height, m \\
-$L/D$ & tank aspect ratio (height-to-diameter) \\
+$h_{\rm tank}$ & tank inner height, m \\
 $\Delta h$ & transient liquid level rise, mm \\
-$\dot{h}$, $dh/dt$ & interface velocity, m/s \\
+$dh/dt$ & interface velocity, m/s \\
+$L/D$ & tank aspect ratio (height-to-diameter) \\
 $\Delta m_{\rm liq}$ & mass of liquid flashed to vapor per step, kg \\
 $\dot{m}_{\rm vapor}$ & vapor mass generation rate, kg/s \\
-$P$, $P_{\rm init}$, $P_{\rm final}$ & instantaneous and boundary tank pressures, kPa \\
-$T$, $T_{\rm sat}$ & liquid and saturation temperatures, K \\
-$t$, $t_{\rm facility}$ & time and facility microgravity duration, s \\
+$P$ & instantaneous tank pressure, kPa \\
+$P_{\rm init}$ & initial tank pressure, kPa \\
+$P_{\rm final}$ & final tank pressure (post-vent target), kPa \\
+$\left(dP/dT\right)_{\rm sat}$ & saturation curve slope, kPa/K \\
+$T_{\rm liq}$ & liquid temperature, K \\
+$T_{\rm sat}$ & saturation temperature, K \\
+$t$ & time, s \\
+$t_{\rm facility}$ & facility microgravity duration, s \\
 $\Delta t$ & solver time step, s \\
 $V_t$ & total tank volume, m$^3$ \\
 $V_{\rm BL}$ & boundary-layer vapor volume, m$^3$ \\
 $Z_{\rm int}$ & interface axial position, m \\
 $\beta$ & dimensionless boundary-layer growth parameter \\
 $\epsilon$ & boil-off partitioning ratio (wall BL vs.\ free surface) \\
-$\rho_l$, $\rho_v$ & saturated liquid and vapor densities, kg/m$^3$ \\
-$\left(dP/dT\right)_{\rm sat}$ & saturation curve slope, kPa/K \\
+$\rho_l$ & saturated liquid density, kg/m$^3$ \\
+$\rho_v$ & saturated vapor density, kg/m$^3$ \\
 \end{tabular}
 
 \noindent Subscripts: BL = boundary layer; sat = saturation; int = interface; $l$ = liquid; $v$ = vapor.
@@ -92,7 +97,7 @@ $\left(dP/dT\right)_{\rm sat}$ & saturation curve slope, kPa/K \\
 \section{Introduction}
 As space exploration architectures increasingly depend on cryogenic propellants---liquid hydrogen (LH$_2$), liquid oxygen (LO$_2$), and liquid methane (LCH$_4$)---robust cryogenic fluid management (CFM) technologies are essential. In microgravity, diminished buoyancy allows surface tension to dominate fluid behavior, distorting the liquid--vapor interface.
 
-When a cryogenic tank is vented to relieve pressure from parasitic heat leak, the rapid depressurization triggers thermodynamic flashing and bulk boiling. Vapor generated in the superheated liquid bulk and along the wetted tank walls forms bubbles that displace surrounding liquid, raising the liquid--vapor interface. If the resulting two-phase mixture reaches the vent port, liquid entrainment causes propellant loss and damage to the venting infrastructure.
+When a cryogenic tank is vented to relieve pressure from parasitic heat leak, the rapid depressurization triggers thermodynamic flashing and bulk boiling. Vapor generated in the superheated liquid bulk and along the wetted tank walls forms bubbles that displace surrounding liquid, raising the liquid--vapor interface. If the resulting two-phase mixture reaches the vent port, liquid entrainment causes propellant loss, freezing in the vent line, and spacecraft control challenges.
 
 Predicting this transient liquid level rise (LLR) is critical for safe and efficient vent-system design. Early experimental investigations by Labus et al.~\cite{Labus1972, Labus1974} at the NASA Lewis Research Center 5-second zero-gravity facility (now NASA Glenn Research Center) provided foundational insights into refrigerant venting under reduced gravity. The Saturn S-IVB AS-203 flight experiment~\cite{AS203_1970} subsequently produced the most comprehensive in-orbit data on LH$_2$ behavior during venting and motivated the development of the LIQLEV analytical boundary-layer model.
 
@@ -101,13 +106,13 @@ This paper presents the modernization of the LIQLEV model and its application to
 \subsection{Need and Significance}
 \label{sec:need_significance}
 
-Long-duration human and robotic missions to the Moon and Mars rely on in-space cryogenic propellants for descent stages, ascent stages, transfer vehicles, and propellant depots. NASA's Moon-to-Mars architecture, the Human Landing System (HLS), and proposed nuclear thermal and electric propulsion stages all require storing and managing LH$_2$, LO$_2$, and LCH$_4$ for weeks to months in microgravity~\cite{Meyer2019, Hartwig2015}. Reliable vent operations---relieving ullage pressure without expelling liquid---are enabling capabilities for each mission class.
+Long-duration human and robotic missions to the Moon and Mars rely on in-space cryogenic propellants for descent stages, ascent stages, transfer vehicles, and propellant depots. NASA's Moon-to-Mars architecture and proposed nuclear thermal and electric propulsion stages all require storing and managing LH$_2$, LO$_2$, and LCH$_4$ for weeks to months in microgravity~\cite{Meyer2019, Hartwig2015}. Reliable vent operations---relieving ullage pressure without expelling liquid---are enabling capabilities for each mission class.
 
-The same depressurization that relieves ullage pressure also induces bulk flashing and wall-driven boundary-layer boiling, and the resulting two-phase swelling can drive the liquid--vapor interface into the vent line. The consequence is liquid carryover, propellant residuals, and (in the worst case) vent-system damage~\cite{Hastings2003, Hartwig2015}. Mission-level analyses of in-space depots place propellant residuals and boil-off losses at several percent per month under poorly characterized vent conditions~\cite{Plachta2014, Meyer2019}, directly eroding payload capacity and $\Delta v$ margin.
+The same depressurization that relieves ullage pressure also induces bulk flashing and wall-driven boundary-layer boiling, and the resulting two-phase swelling can drive the liquid--vapor interface into the vent line. The consequence is liquid carryover, propellant residuals, freezing in the vent line, and (in the worst case) spacecraft control challenges~\cite{Hastings2003, Hartwig2015}. Mission-level analyses of in-space depots place propellant residuals and boil-off losses at several percent per month under poorly characterized vent conditions~\cite{Plachta2014, Meyer2019}, directly eroding payload capacity and $\Delta v$ margin.
 
-Despite the maturity of the underlying physics, predictive correlations for transient LLR under microgravity venting remain anchored to a single in-orbit data set: the Saturn S-IVB AS-203 LH$_2$ experiment of 1966~\cite{AS203_1970}. Subsequent campaigns---including the ground-based Japan Aerospace Exploration Agency (JAXA) $30\,\text{m}^3$ LH$_2$ depressurization test at $1\,$g~\cite{tani2021pressure} and the ISS-based Zero Boil-Off Tank (ZBOT) microgravity experiments~\cite{Kassemi2018}---have advanced the understanding of self-pressurization and active pressure control, yet none resolve the boundary-layer-driven LLR transient during active venting at flight-relevant gravity levels in tanks of sub-meter scale. The gap is acute for HLS-class vehicles, where small ullage margins and aggressive vent duty cycles place LLR on the critical path for vent-system sizing~\cite{NASA80NSSC24K1219}.
+Despite the maturity of the underlying physics, predictive correlations for transient LLR under microgravity venting remain anchored to a single in-orbit data set: the Saturn S-IVB AS-203 LH$_2$ experiment of 1966~\cite{AS203_1970}. Subsequent campaigns---including the ground-based Japan Aerospace Exploration Agency (JAXA) $30\,\text{m}^3$ LH$_2$ depressurization test at $1\,$g~\cite{tani2021pressure} and the ISS-based Zero Boil-Off Tank (ZBOT) microgravity experiments~\cite{Kassemi2018}---have advanced the understanding of self-pressurization and active pressure control, yet none resolve the boundary-layer-driven LLR transient during active venting at flight-relevant gravity levels in small-scale tanks. The gap is acute for long-duration storage depots, where small ullage margins and aggressive vent duty cycles place LLR on the critical path for vent-system sizing~\cite{NASA80NSSC24K1219}.
 
-This paper addresses the gap in three steps. First, the legacy LIQLEV boundary-layer model is reimplemented as a parallelized, CoolProp-integrated Python framework with a Numba just-in-time (JIT) compiled solver that delivers $\sim$40$\times$ speedup over the prior pure-Python implementation, enabling thousand-case parametric sweeps in minutes rather than hours. Second, the modernized model is verified against the JAXA large-scale LH$_2$ data and cross-validated with three-dimensional volume-of-fluid (VOF) computational fluid dynamics (CFD). Third, the verified framework is used to down-select a recommended experimental test matrix for the NASA GRC 5-second zero-gravity facility, providing pre-test predictions and instrumentation requirements for a planned drop-tower campaign that will yield the first sub-meter-scale, flight-relevant LLR data set for CFM correlation development.
+This paper addresses the gap in three steps. First, the legacy LIQLEV boundary-layer model is reimplemented as a parallelized, CoolProp-integrated Python framework with a Numba just-in-time (JIT) compiled solver that delivers $\sim$40$\times$ speedup over the prior pure-Python implementation, enabling thousand-case parametric sweeps in minutes rather than hours. Second, the modernized model is verified against the JAXA large-scale LH$_2$ data and cross-validated with three-dimensional volume-of-fluid (VOF) computational fluid dynamics (CFD). Third, the verified framework is used to down-select a recommended experimental test matrix for the NASA GRC 5-second zero-gravity facility, providing pre-test predictions and instrumentation requirements for a planned drop-tower campaign that will yield the first small-scale, flight-relevant LLR data set for CFM correlation development.
 
 \section{Background and Literature Review}
 
@@ -188,7 +193,7 @@ where $A_c$ is the tank cross-sectional area. Parametric studies examined the se
 \label{fig:liqlev_mass_balance}
 \end{figure}
 
-More recently, Moran~\cite{MoranVBA} adapted the original Fortran code into an Excel VBA environment in support of the HLS program. This adaptation required meticulous line-by-line debugging of the legacy source from the poorly scanned NASA CR-109847 report. Moran's implementation replicated the AS-203 flight conditions, replaced outdated hydrogen property curve fits with calls to the CoolProp library, and introduced a dynamic ratio $\epsilon$ representing the proportion of boil-off generated in the wall boundary layer relative to the free surface. The ratio was made dependent on the wetted-wall and free-surface areas.
+More recently, the original Fortran code was updated by NASA GRC into an Excel VBA environment for usability. This adaptation required meticulous line-by-line debugging of the legacy source from the poorly scanned NASA CR-109847 report. The VBA implementation replicated the AS-203 flight conditions, replaced outdated hydrogen property curve fits with calls to the CoolProp library, and introduced a dynamic ratio $\epsilon$ representing the proportion of boil-off generated in the wall boundary layer relative to the free surface. The ratio was made dependent on the wetted-wall and free-surface areas.
 
 While functional, the VBA implementation was constrained by sequential execution and tight Excel integration, making it unsuitable for large-scale parametric studies or modern computational workflows.
 
@@ -210,7 +215,7 @@ A new ``bulk\_fake'' $\epsilon$ mode was introduced to emulate distributed volum
 \subsubsection{Parallel Sweeps and JIT Acceleration}
 Large-scale parametric analyses across tank geometry, fill level, vent rate, and gravity level are enabled by two complementary acceleration strategies. First, the \texttt{LIQLEV-Python-mp} package distributes the diameter--height grid across configurable worker processes via \texttt{concurrent.futures.ProcessPoolExecutor}, with the worker count taken from the SLURM environment (single-node, $\sim$2000 geometries per vent rate). Second, the transient solver is JIT-compiled with Numba and paired with a 400-point pre-tabulated CoolProp saturation table, eliminating per-step CoolProp calls. Together these deliver $\sim$40$\times$ speedup over the original pure-Python loop on a representative 20\,s integration ($\sim$45\,s reduced to $\sim$1.1\,s per case), without measurable loss of accuracy: every physical signal agrees with the reference solver to better than 1 part in $10^6$.
 
-For each diameter--height combination (50 diameters $\times$ 40 heights = 2000 geometries per vent rate), the full transient simulation runs with an early-termination check that halts execution the instant $h_2 \geq h_{\rm tank}$ (with 0.9999 tolerance for floating-point safety). LLR values are extracted at fixed snapshots ($t = 5\,$s, $t = 20\,$s or end-of-run, and global peak) via \texttt{np.interp}. Results are stored as 2D NumPy grids and exported to Excel workbooks (one per vent rate), with separate sheets for each snapshot, peak rise, and overfill flag. Contour plots are generated with \texttt{contourf}; hatched regions denote lid-impingement geometries, and a $50.8\,$mm (2.0\,in) target-rise contour with a baseline-geometry marker are overlaid for rapid design-space visualization.
+For each diameter--height combination (50 diameters $\times$ 40 heights = 2000 geometries per vent rate), the full transient simulation runs with an early-termination check that halts execution the instant $h(t) \geq h_{\rm tank}$ (with 0.9999 tolerance for floating-point safety). LLR values are extracted at fixed snapshots ($t = 5\,$s, $t = 20\,$s or end-of-run, and global peak) via \texttt{np.interp}. Results are stored as 2D NumPy grids and exported to Excel workbooks (one per vent rate), with separate sheets for each snapshot, peak rise, and overfill flag. Contour plots are generated with \texttt{contourf}; hatched regions denote lid-impingement geometries, and a $50.8\,$mm (2.0\,in) target-rise contour with a baseline-geometry marker are overlaid for rapid design-space visualization.
 
 Additional solver-robustness features include safeguards against zero driving force (\texttt{ak3} $\approx 0$), secant-method divide-by-zero protection, and extensive diagnostic outputs (superheat, vapor generation rate in kg/s, superficial vapor velocity, cumulative vapor mass, boundary-layer thickness, and instantaneous $\epsilon$). These collectively enable evaluation of thousands of configurations while preserving full traceability and numerical stability.
 
@@ -348,18 +353,18 @@ The optimization process identifies tank geometries, initial fill fractions, and
 The two primary optimization criteria are:
 \begin{itemize}
     \item The peak liquid--vapor interface height must be attained \textit{within} the available reduced-gravity duration and must produce an optically measurable rise of at least $50.8\,\text{mm}$ ($2\,\text{in}$). This minimum threshold ensures the thermodynamic signal exceeds residual g-jitter and imaging-system noise, enabling clean capture of the complete transient via high-speed imaging.
-    \item The initial fill fraction must be constrained such that cumulative vapor generation (from both the free interface and wall thermal boundary layer) and the associated volumetric swelling keep the interface below the tank ceiling: $Z_{\rm int}(t) < Z_{\rm tank}$ for all $t \leq t_{\rm facility}$.
+    \item The initial fill fraction must be constrained such that cumulative vapor generation (from both the free interface and wall thermal boundary layer) and the associated volumetric swelling keep the interface below the tank ceiling: $Z_{\rm int}(t) < h_{\rm tank}$ for all $t \leq t_{\rm facility}$.
 \end{itemize}
 
 In microgravity the liquid--vapor interface rapidly transitions from a flat 1\,$g$ surface to a highly curved meniscus whose equilibrium shape is set by the contact angle and surface-energy minimization. Superimposed venting drives upward bulk motion through distributed bubble generation and displacement within the liquid column.
 
-The Python implementation tracks the instantaneous interface location $Z_{\rm int}(t)$ (denoted internally as \texttt{h2} or \texttt{zht2}) via the discrete relation
+The Python implementation tracks the instantaneous interface location $Z_{\rm int}(t)$ via the discrete relation
 \[
 Z_{\rm int}(t) = Z_{\rm int}(t-\Delta t) + \frac{\Delta V_{\rm BL} + \Delta m_{\rm liq}/\rho_{\rm liq}}{A_c},
 \]
 where $\Delta V_{\rm BL}$ is the incremental vapor volume generated in the wall thermal boundary layer over the time step $\Delta t$, $\Delta m_{\rm liq}$ is the mass of liquid flashed to vapor over the same step, $\rho_{\rm liq}$ is the saturated liquid density, and $A_c = \pi D^2/4$ is the tank cross-sectional area. This formulation embodies the one-dimensional piston-like displacement assumption central to the original LIQLEV boundary-layer model.
 
-An early-termination flag halts each simulation the instant $Z_{\rm int} \ge Z_{\rm tank}$, records the overfill condition, and excludes that geometry from further analysis. LLR values are extracted at fixed snapshots ($t=5\,\text{s}$, $t=20\,\text{s}$ or end-of-run, and the global peak) via linear interpolation. These multi-time results, together with the overfill flag, are exported to structured \texttt{.xlsx} grids. This framework enables automated contour plotting with hatched regions denoting invalid (lid-impingement) configurations, supporting rapid down-selection of viable experimental test articles.
+An early-termination flag halts each simulation the instant $Z_{\rm int} \ge h_{\rm tank}$, records the overfill condition, and excludes that geometry from further analysis. LLR values are extracted at fixed snapshots ($t=5\,\text{s}$, $t=20\,\text{s}$ or end-of-run, and the global peak) via linear interpolation. These multi-time results, together with the overfill flag, are exported to structured \texttt{.xlsx} grids. This framework enables automated contour plotting with hatched regions denoting invalid (lid-impingement) configurations, supporting rapid down-selection of viable experimental test articles.
 
 \section{Results and Discussion}
 \label{sec:results_discussion}
@@ -703,7 +708,7 @@ These trends are illustrated in the transient response plots for the recommended
 
 
 \subsection{Effect of Epsilon (\texorpdfstring{$\epsilon$}{epsilon}) and Model Sensitivity}
-The boil-off partitioning parameter $\epsilon$ is the instantaneous fraction of total vapor mass generated in the wall thermal boundary layer relative to that generated at the liquid--vapor free surface. In the modernized LIQLEV, $\epsilon$ is evaluated at every solver time step. In the default height-dependent mode (\texttt{neps} = 0), it follows directly from the geometric wetted-area ratio per the Moran formulation:
+The boil-off partitioning parameter $\epsilon$ is the instantaneous fraction of total vapor mass generated in the wall thermal boundary layer relative to that generated at the liquid--vapor free surface. In the modernized LIQLEV, $\epsilon$ is evaluated at every solver time step. In the default height-dependent mode (\texttt{neps} = 0), it follows directly from the geometric wetted-area ratio:
 
 \[
 \epsilon(t) = \frac{\pi D \, h(t)}{\pi D \, h(t) + \frac{\pi D^{2}}{4}},
@@ -803,22 +808,22 @@ $\bigcirc$   & Bulk-boiling source term + correlation development         & Upda
 \end{tabular}}
 \end{table}
 
-% The modeling work is currently assessed at Technology Readiness Level (TRL) 4: component validation in a laboratory-equivalent environment, demonstrated by quantitative agreement with the JAXA large-scale data and consistent volume-equivalent agreement with three-dimensional CFD. Advancement to TRL~5 requires the planned drop-tower campaign to provide the first sub-meter-scale, flight-relevant LLR data set; that data set enables the bulk-boiling source-term refinement needed to retire the present \texttt{bulk\_fake} engineering approximation.
+% The modeling work is currently assessed at Technology Readiness Level (TRL) 4: component validation in a laboratory-equivalent environment, demonstrated by quantitative agreement with the JAXA large-scale data and consistent volume-equivalent agreement with three-dimensional CFD. Advancement to TRL~5 requires the planned drop-tower campaign to provide the first small-scale, flight-relevant LLR data set; that data set enables the bulk-boiling source-term refinement needed to retire the present \texttt{bulk\_fake} engineering approximation.
 
-The forthcoming experiments are designed around the Table~\ref{tab:recommended_test_matrix} configuration matrix and will employ high-speed imaging through optical access ports, instrumented sidewall temperature probes for boundary-layer characterization, and ullage pressure transducers calibrated against the LIQLEV pre-test pressure histories. The resulting data will close the validation loop on the modernized model and provide the empirical basis for the CFM correlations needed by HLS-class and Mars-class vehicle designers.
+The forthcoming experiments are designed around the Table~\ref{tab:recommended_test_matrix} configuration matrix and will employ high-speed imaging through optical access ports, instrumented sidewall temperature probes for boundary-layer characterization, and ullage pressure transducers calibrated against the LIQLEV pre-test pressure histories. The resulting data will close the validation loop on the modernized model and provide the empirical basis for the CFM correlations needed by long-duration in-space cryogenic propellant systems.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 \paragraph{Findings.} The legacy LIQLEV boundary-layer model has been reimplemented as a parallelized, CoolProp-integrated Python framework with a Numba JIT-compiled solver that delivers $\sim$40$\times$ speedup over the original pure-Python loop while reproducing the reference solution to better than 1 part in $10^6$. The modernized model has been validated against the JAXA $30\,\text{m}^3$ LH$_2$ depressurization experiment: a constant $\epsilon$ in the range $75$--$100$ (\texttt{bulk\_fake} mode) reproduces the experimentally observed $174\,\text{mm}$ ($6.85\,\text{in}$) interface rise within the first few seconds, with $\epsilon \approx 100$ providing the closest match. Three-dimensional VOF CFD cross-validation confirms that LIQLEV provides a conservatively high estimate of bulk-liquid displacement, exceeding the volume-equivalent flat-interface CFD rise by $\sim 22\,\text{mm}$ at the $91\,\text{mm} \times 0.61\,\text{m}$ scale. Parametric sweeps across more than 2000 cylindrical geometries identify the GRC 5-second zero-gravity facility as the optimal test venue, with a recommended test article of $91\,\text{mm}$ diameter $\times$ $0.61\,\text{m}$ height ($L/D \approx 6.67$), nitrogen working fluid, and a 12-condition test matrix spanning $50\,\%$ and $75\,\%$ initial fill at three vent-rate categories (Low / Med / High, calibrated to LIQLEV-predicted target rates of $1.36$--$2.72\,\text{g/s}$ during the $1\,$g shake-down phase). Under these conditions the predicted peak rise spans $\sim 80$--$155\,\text{mm}$ ($\sim 3.1$--$6.1\,\text{in}$), attained between $\sim 3$ and $5\,\text{s}$, comfortably within the facility's microgravity window for the lower-vent / $50\,\%$ fill cases.
 
-\paragraph{Forward Plan.} The FY26+ drop-tower campaign will execute the matrix in Table~\ref{tab:recommended_test_matrix} using high-speed imaging, sidewall temperature probes, and calibrated ullage pressure transducers. The resulting data will close the validation loop on the modernized model, motivate development of an explicit bulk-liquid boiling source term to retire the \texttt{bulk\_fake} engineering approximation, and establish the first sub-meter-scale, flight-relevant transient LLR data set for CFM correlation development. The 2.2-second drop tower was not pursued because the $2.2\,\text{s}$ test window is too short for the boundary-layer-driven interface rise to develop and reach a measurable peak under any geometry compatible with the existing drop-capsule envelope; parabolic flight was likewise set aside because lateral g-jitter contaminates the boundary-layer-driven signal.
+\paragraph{Forward Plan.} The FY26+ drop-tower campaign will execute the matrix in Table~\ref{tab:recommended_test_matrix} using high-speed imaging, sidewall temperature probes, and calibrated ullage pressure transducers. The resulting data will close the validation loop on the modernized model, motivate development of an explicit bulk-liquid boiling source term to retire the \texttt{bulk\_fake} engineering approximation, and establish the first small-scale, flight-relevant transient LLR data set for CFM correlation development. The 2.2-second drop tower was not pursued because the $2.2\,\text{s}$ test window is too short for the boundary-layer-driven interface rise to develop and reach a measurable peak under any geometry compatible with the existing drop-capsule envelope; parabolic flight was likewise set aside because lateral g-jitter contaminates the boundary-layer-driven signal.
 
-\paragraph{Programmatic Impact.} The validated modeling framework and pre-test design directly support vent-system sizing for HLS-class vehicles, in-space cryogenic depots, and Mars transfer stages---all critically dependent on reliable microgravity vent operations to meet propellant residual and $\Delta v$ margin requirements. By replacing single-data-point reliance on the 1966 AS-203 flight with a sub-meter-scale drop-tower experiment anchored by a verified, fast, and extensible analytical tool, the proposed campaign reduces a long-standing technical risk on the path from current CFM practice to long-duration human spaceflight. The Python implementation, including \texttt{LIQLEV-Python-mp} and the JIT-accelerated solver, is available from the authors upon request.
+\paragraph{Programmatic Impact.} The validated modeling framework and pre-test design directly support vent-system sizing for in-space cryogenic depots and Mars transfer stages---both critically dependent on reliable microgravity vent operations to meet propellant residual and $\Delta v$ margin requirements. By replacing single-data-point reliance on the 1966 AS-203 flight with a small-scale drop-tower experiment anchored by a verified, fast, and extensible analytical tool, the proposed campaign reduces a long-standing technical risk on the path from current CFM practice to long-duration human spaceflight. The Python implementation, including \texttt{LIQLEV-Python-mp} and the JIT-accelerated solver, is available from the authors upon request.
 
 \section*{Acknowledgment}
 
-The authors acknowledge the VBA adaptations developed by Matt Moran, which provided the essential foundation for this effort.
+The authors acknowledge the prior VBA adaptation of LIQLEV at NASA Glenn Research Center, which provided the foundation for the modernized Python implementation.
 
 \bibliography{references}
 
